@@ -31,3 +31,7 @@ This is the repository for Intership Season 16 - team Sixteen at DEK
     - [ ] Sprint 5 planning
     - [ ] Refactor
     - [ ] Final presentation
+
+## File location
+- Client Application (/gui_client)
+- Kamailio IMS setup (/Documentation/Sprint2/READMY.md)

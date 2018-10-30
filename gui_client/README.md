@@ -16,4 +16,3 @@ For deploying user client software using JAVA and Eclipse for deployment
 - #### Library
     - JAIN SIP
     - Jfoenix
-    - 
