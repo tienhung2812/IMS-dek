@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="458.0" prefWidth="309.0" style="-fx-background-color: #FFFF;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+   <children>
+      <Pane prefHeight="289.0" prefWidth="309.0" style="-fx-background-color: #9933FF; -fx-border-color: #000;">
+         <children>
+            <ImageView fitHeight="208.0" fitWidth="210.0" layoutX="51.0" layoutY="48.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/User.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Button layoutX="44.0" layoutY="333.0" mnemonicParsing="false" prefHeight="86.0" prefWidth="93.0" style=" -fx-background-color: #FFFF;">
+          <graphic>
+                <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../Images/Call.png" />
+                </image>
+                </ImageView>
+           </graphic>
+      </Button>
+      <Button fx:id="btnCancelInComingCall" layoutX="180.0" layoutY="324.0" mnemonicParsing="false" onAction="#handleButtonCancelInComingCall" prefHeight="95.0" prefWidth="93.0" style=" -fx-background-color: #FFFF;" >
+          <graphic>
+                <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@../Images/Uncall.JPG" />
+                </image>
+                </ImageView>
+           </graphic>
+      </Button>
+   </children>
+</AnchorPane>
