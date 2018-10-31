@@ -1,6 +1,6 @@
 # IMS-dek
 This is the repository for Intership Season 16 - team Sixteen at DEK
-
+Using Kamailio sip
 ## Process
 - [x] Sprint 1
     - [x] Team kickoff 
