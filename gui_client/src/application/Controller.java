@@ -149,7 +149,7 @@ public class Controller  implements Initializable  {
 //        System.out.println(sipListener);
 	}
 	
-	String path = "D:\\GUI\\gui_client\\src\\application\\images\\";
+	String path = "C:\\Users\\tien.t.pham\\Desktop\\IMS-dek\\gui_client\\src\\application\\images\\";
 	String btn1_text = "Call";
 	String btn2_text = "Cam";
 	
