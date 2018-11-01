@@ -220,7 +220,7 @@ public class exampleGUI extends javax.swing.JFrame {
 
     private void cmdBATDAUActionPerformed(java.awt.event.ActionEvent evt) throws Exception {//GEN-FIRST:event_cmdBATDAUActionPerformed
         sipListener = new exampleListener(this);
-        //sipListener.sendRequest("REGISTER", false);
+        sipListener.sendRequest("REGISTER");
     }//GEN-LAST:event_cmdBATDAUActionPerformed
 
     private void cmdGOIActionPerformed(java.awt.event.ActionEvent evt) throws Exception {//GEN-FIRST:event_cmdGOIActionPerformed
@@ -228,7 +228,6 @@ public class exampleGUI extends javax.swing.JFrame {
          // Phương thức sendRequest() của exampleListener 
         // nhận tham số đầu vào kiểu String
         //, cho biết kiểu request sẽ được tạo và gởi UAS 
-        sipListener.sendRequest("INVITE", false);
     }//GEN-LAST:event_cmdGOIActionPerformed
 
     private void cmdNHANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNHANActionPerformed
@@ -239,8 +238,7 @@ public class exampleGUI extends javax.swing.JFrame {
         // Phương thức sendRequest() của exampleListener 
         // nhận tham số đầu vào kiểu String
         //, cho biết kiểu request sẽ được tạo và gởi UAS
-    	sipListener.sendRequest("REGISTER", true);
-        //sipListener.sendRequest("BYE", false);
+        sipListener.sendRequest("BYE");
     }//GEN-LAST:event_cmdKETTHUCActionPerformed
 
     /**
