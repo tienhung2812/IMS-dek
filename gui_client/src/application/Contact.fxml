@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="622.0" prefWidth="662.0" style="-fx-background-color: #FFFF;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.NewController">
+   <children>
+      <Button fx:id="deregister" layoutX="607.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleButtonDeregister" prefHeight="28.0" prefWidth="31.0" style="-fx-background-color: #FFFF;" textFill="WHITE">
+         <graphic>
+            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/return.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button layoutX="389.0" layoutY="481.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="60.0" style=" -fx-background-color: #FFFF;">
+         <graphic>
+            <ImageView fitHeight="68.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/Call.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Button layoutX="471.0" layoutY="465.0" mnemonicParsing="false" prefHeight="109.0" prefWidth="100.0" style=" -fx-background-color: #FFFF;">
+         <graphic>
+            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/Uncall.JPG" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button layoutX="562.0" layoutY="465.0" mnemonicParsing="false" prefHeight="109.0" prefWidth="100.0" style=" -fx-background-color: #FFFF;">
+         <graphic>
+            <ImageView fitHeight="76.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/Camera.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <TableView fx:id="tableview" layoutX="16.0" layoutY="189.0" prefHeight="368.0" prefWidth="371.0" />
+      <ImageView fitHeight="127.0" fitWidth="193.0" layoutX="227.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@images/logoApp.PNG" />
+         </image>
+      </ImageView>
+      <Label layoutX="16.0" layoutY="151.0" text="Contact list">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <Button fx:id="Add" layoutX="497.0" layoutY="319.0" mnemonicParsing="false" onAction="#handleButtonAdd" prefHeight="54.0" prefWidth="38.0" style=" -fx-background-color: #FFFF;">
+         <graphic>
+            <ImageView fitHeight="40.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/Add.JPG" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button fx:id="Remove" layoutX="572.0" layoutY="322.0" mnemonicParsing="false" onAction="#handleButtonRemove" prefHeight="38.0" prefWidth="24.0" style=" -fx-background-color: #FFFF;">
+         <graphic>
+            <ImageView fitHeight="45.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/Delete.JPG" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Label layoutX="407.0" layoutY="151.0" text="User name">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label layoutX="407.0" layoutY="225.0" text="URI">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <TextField fx:id="ContactUsername" layoutX="407.0" layoutY="187.0" prefHeight="25.0" prefWidth="223.0" />
+      <TextField fx:id="ContactPhone" layoutX="409.0" layoutY="256.0" prefHeight="25.0" prefWidth="223.0" />
+   </children>
+</AnchorPane>
