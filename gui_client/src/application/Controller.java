@@ -27,7 +27,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.*;
 
-public class Controller implements Initializable  {
+public class Controller  implements Initializable  {
 	
 	//===============================================
 	//				Giao diện
