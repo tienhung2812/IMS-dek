@@ -30,6 +30,7 @@ import javax.sip.header.AuthorizationHeader;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
+import javax.sip.header.ExpiresHeader;
 import javax.sip.header.FromHeader;
 import javax.sip.header.HeaderFactory;
 import javax.sip.header.MaxForwardsHeader;
@@ -52,6 +53,8 @@ public class exampleListener implements SipListener {
 	String sIP;
 	int iPort;
 	exampleGUI GUI;
+	String userName;
+	String password;
 
 	ContactHeader contactHeader;
 
@@ -72,8 +75,8 @@ public class exampleListener implements SipListener {
 		String algrm = ah_c.getAlgorithm();
 		String realm = ah_c.getRealm();
 		MessageDigest mdigest;
-		userName = "alvin";
-		password = "nguyen021219973684";
+
+		password = userName;
 		try {
 			mdigest = MessageDigest.getInstance(algrm);
 
@@ -128,13 +131,13 @@ public class exampleListener implements SipListener {
 
 			Properties properties = new Properties();
 			properties.setProperty("javax.sip.STACK_NAME", "sipStack");
-			properties.setProperty("javax.sip.IP_ADDRESS", "192.168.122.157");
+			properties.setProperty("javax.sip.IP_ADDRESS", "192.168.122.230");
 			properties.setProperty("javax.sip.OUTBOUND_PROXY", "192.168.122.39:5060/UDP");
 			sipStack = sipFactory.createSipStack(properties);
 
-//			sIP = InetAddress.getLocalHost().getHostAddress();
+			// sIP = InetAddress.getLocalHost().getHostAddress();
 			// System.out.print(sIP);
-			sIP = "192.168.122.157";
+			sIP = "192.168.122.230";
 
 			iPort = GUI.getPort();
 			String protocol = "udp";
@@ -157,24 +160,24 @@ public class exampleListener implements SipListener {
 		}
 	}
 
-	public void sendRequest(String typeRequest) {
+	public void sendRequest(String typeRequest, boolean deRegister) {
 		try {
 			switch (typeRequest) {
 
 			case Request.REGISTER: {
 				int tag = Math.abs((new Random()).nextInt());
 
-				String nameAddress = GUI.getAOR();
+				String nameAddress = GUI.getUAS();
 				String userName = nameAddress.substring(nameAddress.indexOf(":") + 1, nameAddress.indexOf("@"));
-				Address fromAddress = addressFactory.createAddress(nameAddress);
-				fromAddress.setDisplayName(userName);
-				FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
-
-				nameAddress = GUI.getUAS();
-				userName = nameAddress.substring(nameAddress.indexOf(":") + 1, nameAddress.indexOf("@"));
 				Address toAddress = addressFactory.createAddress(nameAddress);
 				toAddress.setDisplayName(userName);
 				ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
+
+				nameAddress = GUI.getAOR();
+				userName = nameAddress.substring(nameAddress.indexOf(":") + 1, nameAddress.indexOf("@"));
+				Address fromAddress = addressFactory.createAddress(nameAddress);
+				fromAddress.setDisplayName(userName);
+				FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
 
 				ViaHeader viaHeader = headerFactory.createViaHeader(sIP, iPort, "udp", null);
 				ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
@@ -190,6 +193,14 @@ public class exampleListener implements SipListener {
 				System.out.println(requestURI);
 				Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader, cSeqHeader,
 						fromHeader, toHeader, viaHeaders, maxForwardsHeader);
+
+				ExpiresHeader expiresHeader;
+				if (deRegister == true) {
+					expiresHeader = headerFactory.createExpiresHeader(0);
+				} else {
+					expiresHeader = headerFactory.createExpiresHeader(1);
+				}
+				request.addHeader(expiresHeader);
 
 				request.addHeader(contactHeader);
 
@@ -256,7 +267,7 @@ public class exampleListener implements SipListener {
 
 				GUI.setTRANGTHAI(BYEClientTransaction.getState().toString());
 				GUI.displayMessage("Gởi : " + ByeRequest.toString());
-
+				break;
 			}
 			}
 		} catch (Exception ex) {
@@ -264,7 +275,7 @@ public class exampleListener implements SipListener {
 		}
 	}
 
-	public void sendResponse(String typeRequest, Response response) {
+	public void sendResponse(String typeRequest, Response response, boolean deRegister) {
 		try {
 
 			switch (typeRequest) {
@@ -298,13 +309,20 @@ public class exampleListener implements SipListener {
 				System.out.println(requestURI);
 				Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader, cSeqHeader,
 						fromHeader, toHeader, viaHeaders, maxForwardsHeader);
-				if (request != null) {
-					AuthorizationHeader authHeader = authorizationHeader(headerFactory, response, request, userName,
-							"123456");
-					request.addHeader(authHeader);
 
-				}
+				AuthorizationHeader authHeader = authorizationHeader(headerFactory, response, request, userName,
+						"123456");
+				request.addHeader(authHeader);
 				
+				ExpiresHeader expiresHeader;
+				
+				if (deRegister == true) {
+					expiresHeader = headerFactory.createExpiresHeader(0);
+				} else {
+					expiresHeader = headerFactory.createExpiresHeader(1);
+				}
+				request.addHeader(expiresHeader);
+
 				request.addHeader(contactHeader);
 
 				clientTransaction = sipProvider.getNewClientTransaction(request);
@@ -383,7 +401,7 @@ public class exampleListener implements SipListener {
 	}
 
 	// phía client
-//	@SuppressWarnings("deprecation")
+	// @SuppressWarnings("deprecation")
 	public void processResponse(ResponseEvent responseEvent) {
 		try {
 			Response response = responseEvent.getResponse();
@@ -398,7 +416,7 @@ public class exampleListener implements SipListener {
 			// =========================
 			if (cSeqHeader.getMethod().equals("REGISTER")) {
 				if (response.getStatusCode() == 401) {
-					sendResponse("REGISTER", response);
+					sendResponse("REGISTER", response, true);
 				}
 				// kiểm tra StatusCode của response có phải là 200
 				else if (response.getStatusCode() == 200) {
