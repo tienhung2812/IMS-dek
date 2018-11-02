@@ -52,7 +52,7 @@ public class NewController extends Application implements Initializable {
 	private javafx.scene.control.PasswordField password;
 	
 	@FXML
-	private final static TableView<User> tableview = new TableView<>();
+	private TableView<User> tableview = new TableView<>();
 	
 	@FXML
 	private TableColumn<User, String> colUsername;
@@ -61,7 +61,7 @@ public class NewController extends Application implements Initializable {
 	private TableColumn<User, String> colURI;
 	
 	@FXML
-	private final ObservableList<User> datalist = FXCollections.observableArrayList();
+	private ObservableList<User> datalist = FXCollections.observableArrayList();
 	
 	@FXML
 	private javafx.scene.control.TextField ContactUsername, ContactPhone;
@@ -105,27 +105,24 @@ public class NewController extends Application implements Initializable {
 	}
 	
 	@FXML
-	public void ConChoHung() throws Exception
-	{
-		//Đóng form hiện tại
-		Stage stage1 = (Stage)start.getScene().getWindow();
-		stage1.close();
-		
-		//Mở form mới
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Contact.fxml"));
-		Parent rootContact = (Parent) fxmlLoader.load();
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(rootContact)); 
-        stage.show();
-	}
-	@FXML
 	private void handleButtonStart(ActionEvent event) throws Exception { // xử lí button Start
 		
 		if((username.getText().equals("Luan") && password.getText().equals("123")) || (username.getText().equals("Tien") && password.getText().equals("456")))
 		{
-			ConChoHung();
+			//Đóng form hiện tại
+
+			Stage stage1 = (Stage)start.getScene().getWindow();
+			stage1.close();
+	       
+			//Mở form mới
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Contact.fxml"));
+			Parent rootContact = (Parent) fxmlLoader.load();
+	        Stage stage = new Stage();
+	        stage.initModality(Modality.APPLICATION_MODAL);
+	        stage.initStyle(StageStyle.UNDECORATED);
+	        stage.setScene(new Scene(rootContact)); 
+	        stage.show();
+	
 		}
 		else
 		{
@@ -224,6 +221,7 @@ public class NewController extends Application implements Initializable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+		
     }  
 
 	public void start(Stage stage) throws Exception {
