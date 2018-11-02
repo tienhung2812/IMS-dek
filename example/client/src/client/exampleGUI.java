@@ -218,38 +218,29 @@ public class exampleGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cmdBATDAUActionPerformed(java.awt.event.ActionEvent evt) throws Exception {//GEN-FIRST:event_cmdBATDAUActionPerformed
+    private void cmdBATDAUActionPerformed(java.awt.event.ActionEvent evt) throws Exception {
         sipListener = new exampleListener(this);
         sipListener.sendRequest("REGISTER");
-    }//GEN-LAST:event_cmdBATDAUActionPerformed
+    }
 
-    private void cmdGOIActionPerformed(java.awt.event.ActionEvent evt) throws Exception {//GEN-FIRST:event_cmdGOIActionPerformed
+    private void cmdGOIActionPerformed(java.awt.event.ActionEvent evt) throws Exception {
   
-         // Phương thức sendRequest() của exampleListener 
-        // nhận tham số đầu vào kiểu String
-        //, cho biết kiểu request sẽ được tạo và gởi UAS 
-    }//GEN-LAST:event_cmdGOIActionPerformed
+    }
 
-    private void cmdNHANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdNHANActionPerformed
-        //sipListener.sendResponse();
-    }//GEN-LAST:event_cmdNHANActionPerformed
+    private void cmdNHANActionPerformed(java.awt.event.ActionEvent evt) {
+        
+    }
 
-    private void cmdKETTHUCActionPerformed(java.awt.event.ActionEvent evt) throws Exception {//GEN-FIRST:event_cmdKETTHUCActionPerformed
-        // Phương thức sendRequest() của exampleListener 
-        // nhận tham số đầu vào kiểu String
-        //, cho biết kiểu request sẽ được tạo và gởi UAS
-        sipListener.sendRequest("BYE");
-    }//GEN-LAST:event_cmdKETTHUCActionPerformed
+    private void cmdKETTHUCActionPerformed(java.awt.event.ActionEvent evt) throws Exception {
+      
+        //sipListener.sendRequest("BYE");
+    	System.out.println("DEREGISTER");
+        sipListener.sendRequest("DEREGISTER");
+    }
 
-    /**
-     * @param args the command line arguments
-     */
+   
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+       
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {

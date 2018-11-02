@@ -2,6 +2,7 @@ package application;
 
 import java.awt.Button;
 import java.awt.TextField;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -22,10 +23,18 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import client.SipClient;
+
 public class NewController extends Application implements Initializable {
 	
 	@FXML
+	private SipClient sipclient;
 	private TextArea textarea;
+	
+	public void displayMessage(String message) {
+
+		textarea.setText(message);
+	}
 	
 	@FXML
 	private javafx.scene.control.Button start, deregister ;
@@ -33,37 +42,47 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	private javafx.scene.control.TextField username;
 	
+	public String getUserName() {
+		return username.getText();
+	}
+	
 	@FXML
 	private javafx.scene.control.PasswordField password;
 	
+	public String getPassword() {
+		return password.getText();
+	}
+	
+	@FXML
+	public void changeStage() throws IOException {
+		Stage stage1 = (Stage)start.getScene().getWindow();
+		stage1.close();
+		
+		//Mở form mới
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Contact.fxml"));
+		Parent rootContact = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(rootContact));  
+        stage.show();
+	}
+	
+	@FXML
+	public void alert(String err) {
+		Alert alert = new Alert(AlertType.ERROR);
+        //alert.setContentText("Register Fail!");
+		alert.setHeaderText(err);
+        alert.showAndWait();
+	}
 	@FXML
 	private void handleButtonStart(ActionEvent event) throws Exception {
-		
-		System.out.println( password.getText() + username.getText());
-		if(username.getText().equals("luantran") && password.getText().equals("123456"))
-		{
-			//Đóng form hiện tại
-			Stage stage1 = (Stage)start.getScene().getWindow();
-			stage1.close();
-			
-			//Mở form mới
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Contact.fxml"));
-			Parent rootContact = (Parent) fxmlLoader.load();
-	        Stage stage = new Stage();
-	        stage.initModality(Modality.APPLICATION_MODAL);
-	        stage.initStyle(StageStyle.UNDECORATED);
-	        stage.setScene(new Scene(rootContact));  
-	        stage.show();
-		}
-		else
-		{
-			Alert alert = new Alert(AlertType.ERROR);
-	        //alert.setContentText("Register Fail!");
-			alert.setHeaderText("Register Fail");
-	        alert.showAndWait();
-		}
-       
-//        System.out.println(sipListener);
+		//displayMessage("sefsef");
+		textarea.setText("ABC");
+//		sipclient = new SipClient(this);
+//		sipclient.register(username.getText(),password.getText());
+//		System.out.println( password.getText() + username.getText());
+
 	}
 	
 	@FXML
