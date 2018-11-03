@@ -4,8 +4,12 @@ import java.awt.Button;
 import java.awt.List;
 import java.awt.TextField;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 import java.security.acl.Group;
 import java.util.ResourceBundle;
@@ -64,13 +68,13 @@ public class NewController extends Application implements Initializable {
 	private ObservableList<User> datalist = FXCollections.observableArrayList();
 	
 	@FXML
-	private javafx.scene.control.TextField ContactUsername, ContactPhone;
+	private javafx.scene.control.TextField ContactUsername, ContactURI;
 
-	
+
 	@FXML
     private void ReadCSV() // read file csv
     {
-        String CsvFile = "C:\\Users\\luan.n.tran\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv";
+        String CsvFile = "C:\\Users\\15510\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv";
         String FieldDelimiter = ",";
 
         BufferedReader br;
@@ -84,7 +88,7 @@ public class NewController extends Application implements Initializable {
                 
                 //if(fields[0].equals(username.getText()))
                 //{
-	                User user = new User(fields[1], fields[2]);
+	                User user = new User(fields[0], fields[1]);
 	                datalist.add(user);
                 //}
 
@@ -105,16 +109,15 @@ public class NewController extends Application implements Initializable {
 	}
 	
 	@FXML
-	private void handleButtonStart(ActionEvent event) throws Exception { // xử lí button Start
+	private void handleButtonStart(ActionEvent event) throws Exception { // run button Start
 		
 		if((username.getText().equals("Luan") && password.getText().equals("123")) || (username.getText().equals("Tien") && password.getText().equals("456")))
 		{
-			//Đóng form hiện tại
-
+			//an form hien tai
 			Stage stage1 = (Stage)start.getScene().getWindow();
 			stage1.close();
 	       
-			//Mở form mới
+			//show form moi
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Contact.fxml"));
 			Parent rootContact = (Parent) fxmlLoader.load();
 	        Stage stage = new Stage();
@@ -122,6 +125,7 @@ public class NewController extends Application implements Initializable {
 	        stage.initStyle(StageStyle.UNDECORATED);
 	        stage.setScene(new Scene(rootContact)); 
 	        stage.show();
+	        
 	
 		}
 		else
@@ -132,41 +136,64 @@ public class NewController extends Application implements Initializable {
 
 	}
 	
-	@FXML
-    private void handleButtonAdd(ActionEvent event) throws Exception { // Buttuon thêm contact mới
+	@FXML 
+	private boolean TestURI_inFileCSV( String URI) // kiem tra URI da co trong list contact chua.
+	{
+		for (int i = 0 ; i < datalist.size(); i++)
+		{
+			User u = datalist.get(i);
+			if( u.getPhone().equals(ContactURI.getText()))
+				return true;
+		}
+        return false;
+	}
 	
-		if(ContactUsername.getText().equals("") || ContactPhone.getText().equals("") )
+	boolean kiemtra = false;
+	@FXML
+    private void handleButtonAdd(ActionEvent event) throws Exception { // Button them contact
+	
+		kiemtra = TestURI_inFileCSV(ContactURI.getText());
+		if(ContactUsername.getText().equals("") || ContactURI.getText().equals("") )
 		{
 			ErrorDialog("Insert Username or Password !!!");
 		}
 		else
 		{
-			User newuser = new User(ContactUsername.getText(), ContactPhone.getText());
-			datalist.add(newuser);
-			tableview.setItems(datalist);
-			ContactPhone.clear();
-			ContactUsername.clear();
+			if( kiemtra == true)
+			{
+				ErrorDialog("URI is exists !!!");
+			}
+			else
+			{
+				User newuser = new User(ContactUsername.getText(), ContactURI.getText());
+				datalist.add(newuser);
+				tableview.setItems(datalist);
+				ContactURI.clear();
+				ContactUsername.clear();
+			}
 		}
 
 	}
 	
 	@FXML
-    private void handleButtonRemove(ActionEvent event) throws Exception { // Xóa contact trong list contact
+    private void handleButtonRemove(ActionEvent event) throws Exception { // Xoa contact list contact
 	
 		User selectedItem = tableview.getSelectionModel().getSelectedItem();
 		if(selectedItem == null)
-			ErrorDialog("Contact list is empty");
+			ErrorDialog("Choice contact need delete !!!");
 		else
 			tableview.getItems().remove(selectedItem);
 	}
 	
 	@FXML
-	private void handleButtonDeregister(ActionEvent event) throws Exception { // button hủy đăng kí --> thoát ra màn hình register
-			//Đóng form hiện tại
+	private void handleButtonDeregister(ActionEvent event) throws Exception { // button xoa dang ki -> ra man hinh register
+			
+			writeTooFileCSV();
+			//an form hien tai
 			Stage stage1 = (Stage)deregister.getScene().getWindow();
 			stage1.close();
 			
-			//Mở form mới
+			//mo form moi
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Register.fxml"));
 			Parent rootContact = (Parent) fxmlLoader.load();
 	        Stage stage = new Stage();
@@ -176,6 +203,27 @@ public class NewController extends Application implements Initializable {
 	        stage.show();
 	}
 	
+	@FXML
+	
+	public void writeTooFileCSV() throws Exception {
+	    Writer writer = null;
+	    try {
+	        File file = new File("C:\\Users\\15510\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv");
+	        writer = new BufferedWriter(new FileWriter(file));
+	        for (User user : datalist) {
+
+	            String text = user.getUsername() + "," + user.getPhone() + "\n";
+	            writer.write(text);
+	        }
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	    }
+	    finally {
+
+	        writer.flush();
+	         writer.close();
+	    } 
+	}
 	@Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -190,7 +238,7 @@ public class NewController extends Application implements Initializable {
 	        colURI.impl_setWidth(250);
 	        
 
-	        //sự kiện Edit column
+	        //su kien Edit column
 	        tableview.setEditable(true);
 	        colUsername.setCellFactory(TextFieldTableCell.forTableColumn());
 	        colUsername.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<User,String> >() {
@@ -214,10 +262,9 @@ public class NewController extends Application implements Initializable {
 				}
 			});
 	        
-	        //gắn datalist vào tableview
+	      //gan datalist vao tableview
 	        tableview.setItems(datalist);
 	        tableview.getColumns().addAll(colUsername, colURI);
-	        
         } catch (Exception ex) {
             ex.printStackTrace();
         }

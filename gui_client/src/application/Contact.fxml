@@ -86,6 +86,6 @@
          </font>
       </Label>
       <TextField fx:id="ContactUsername" layoutX="407.0" layoutY="187.0" prefHeight="25.0" prefWidth="223.0" />
-      <TextField fx:id="ContactPhone" layoutX="409.0" layoutY="256.0" prefHeight="25.0" prefWidth="223.0" />
+      <TextField fx:id="ContactURI" layoutX="409.0" layoutY="256.0" prefHeight="25.0" prefWidth="223.0" />
    </children>
 </AnchorPane>
