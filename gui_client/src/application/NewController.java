@@ -70,6 +70,11 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	private javafx.scene.control.TextField ContactUsername, ContactURI;
 
+	@FXML
+	private void setTextArea(String string)
+	{
+		textarea.setText(string +"\n");
+	}
 
 	@FXML
     private void ReadCSV() // read file csv
@@ -162,6 +167,8 @@ public class NewController extends Application implements Initializable {
 			if( kiemtra == true)
 			{
 				ErrorDialog("URI is exists !!!");
+				ContactURI.clear();
+				ContactUsername.clear();
 			}
 			else
 			{
@@ -232,7 +239,7 @@ public class NewController extends Application implements Initializable {
 			colUsername = new TableColumn("User Name");
 	        colUsername.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
 	        colUsername.impl_setWidth(150);
-	        
+
 	        colURI = new TableColumn("URI");
 	        colURI.setCellValueFactory(new PropertyValueFactory<User, String>("phone"));
 	        colURI.impl_setWidth(250);
