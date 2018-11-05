@@ -127,19 +127,19 @@ public class SipClient implements SipListener {
 	public SipClient(NewController gui) {
 		try {
 			this.GUI = gui;
-
+			String ipAdd = "192.168.122.199";
 			sipFactory = SipFactory.getInstance();
 			sipFactory.setPathName("gov.nist");
 
 			Properties properties = new Properties();
 			properties.setProperty("javax.sip.STACK_NAME", "sipStack");
-			properties.setProperty("javax.sip.IP_ADDRESS", "192.168.122.157");
+			properties.setProperty("javax.sip.IP_ADDRESS", ipAdd);
 			properties.setProperty("javax.sip.OUTBOUND_PROXY", "192.168.122.39:5060/UDP");
 			sipStack = sipFactory.createSipStack(properties);
 
 //			sIP = InetAddress.getLocalHost().getHostAddress();
 			// System.out.print(sIP);
-			sIP = "192.168.122.157";
+			sIP = ipAdd;
 
 			iPort = 5060;
 			String protocol = "udp";
@@ -218,7 +218,7 @@ public class SipClient implements SipListener {
 				clientTransaction.sendRequest();
 
 //				GUI.setTRANGTHAI(clientTransaction.getState().toString());
-//				GUI.displayMessage("Gởi : " + request.toString());
+				GUI.displayMessage("Gởi : " + request.toString());
 				break;
 				}
 				catch (Exception ex) {
@@ -270,7 +270,7 @@ public class SipClient implements SipListener {
 				clientTransaction.sendRequest();
 
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
-//				GUI.displayMessage("Send : " + request.toString());
+				GUI.displayMessage("Send : " + request.toString());
 				break;
 			}
 
@@ -445,7 +445,7 @@ public class SipClient implements SipListener {
 				clientTransaction.sendRequest();
 
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
-//				GUI.displayMessage("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
+				GUI.displayMessage("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
 				break;
 			}
 
@@ -464,7 +464,7 @@ public class SipClient implements SipListener {
 	public void processRequest(RequestEvent requestEvent) {
 		try {
 			Request request = requestEvent.getRequest();
-//			GUI.displayMessage("Nhận : " + request.toString());
+			GUI.displayMessage("Nhận : " + request.toString());
 
 			if (request.getMethod().equals("REGISTER")) {
 				// tạo 180 Ringing
@@ -478,7 +478,7 @@ public class SipClient implements SipListener {
 				serverTransaction.sendResponse(response);
 
 				//GUI.setTRANGTHAI(serverTransaction.getState().toString());
-//				GUI.displayMessage("Gởi : " + response.toString());
+				GUI.displayMessage("Gởi : " + response.toString());
 				System.out.println("Đã vao register cua server");
 			}
 			// khi request nhận được là INVITE
@@ -522,7 +522,7 @@ public class SipClient implements SipListener {
 		try {
 			Response response = responseEvent.getResponse();
 
-//			GUI.displayMessage("Recieved : " + response.toString());
+			GUI.displayMessage("Recieved : " + response.toString());
 			System.out.println("Recieved : " +response.toString());
 			// lấy CSeqHeader được dính kèm theo trong response
 			CSeqHeader cSeqHeader = (CSeqHeader) response.getHeader("CSeq");

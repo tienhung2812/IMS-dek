@@ -50,10 +50,7 @@ public class NewController extends Application implements Initializable {
 	private SipClient sipclient;
 	private TextArea textarea;
 	SipClient sipListener;
-	public void displayMessage(String message) {
 
-		textarea.setText(message);
-	}
 	
 	@FXML
 	private javafx.scene.control.Button start, deregister, Add, Remove ;
@@ -87,12 +84,40 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	private javafx.scene.control.TextField ContactUsername, ContactURI;
 
-	@FXML
-	private void setTextArea(String string)
-	{
-		textarea.setText(string +"\n");
-	}
+	public void displayMessage(String string)
+	  {
+	    Platform.runLater(new Runnable() {
+	      @Override public void run() {
+	    	  textarea.appendText(string +"\n");  
+	      }
+	    });
+	  }
+	public void changeStage()
+	  {
+	    Platform.runLater(new Runnable() {
+	      @Override public void run() {
+	    	//Đóng form hiện tại
 
+	  		Stage stage1 = (Stage)start.getScene().getWindow();
+	  		stage1.close();
+	         
+	  		//Mở form mới
+	  		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Contact.fxml"));
+	  		Parent rootContact = null;
+			try {
+				rootContact = (Parent) fxmlLoader.load();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	          Stage stage = new Stage();
+	          stage.initModality(Modality.APPLICATION_MODAL);
+	          stage.initStyle(StageStyle.UNDECORATED);
+	          stage.setScene(new Scene(rootContact)); 
+	          stage.show();    
+	      }
+	    });
+	  }
 	@FXML
     private void ReadCSV() // read file csv
     {
@@ -130,23 +155,7 @@ public class NewController extends Application implements Initializable {
         alert.showAndWait();
 	}
 	
-	@FXML
-	public void changeStage() throws Exception
-	{
-		//Đóng form hiện tại
-
-		Stage stage1 = (Stage)start.getScene().getWindow();
-		stage1.close();
-       
-		//Mở form mới
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Contact.fxml"));
-		Parent rootContact = (Parent) fxmlLoader.load();
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(rootContact)); 
-        stage.show();
-	}
+	
 	
 	@FXML
 	private void handleButtonStart(ActionEvent event) throws Exception { // xử lí button Start
@@ -229,7 +238,7 @@ public class NewController extends Application implements Initializable {
 	public void writeTooFileCSV() throws Exception {
 	    Writer writer = null;
 	    try {
-	        File file = new File("C:\\Users\\15510\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv");
+	        File file = new File("src\\application\\User.csv");
 	        writer = new BufferedWriter(new FileWriter(file));
 	        for (User user : datalist) {
 
