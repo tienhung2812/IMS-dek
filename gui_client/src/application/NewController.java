@@ -15,6 +15,9 @@ import java.security.acl.Group;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.glass.ui.ClipboardAssistance;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
