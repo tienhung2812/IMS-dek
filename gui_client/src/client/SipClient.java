@@ -127,7 +127,7 @@ public class SipClient implements SipListener {
 	public SipClient(NewController gui) {
 		try {
 			this.GUI = gui;
-			String ipAdd = "192.168.122.199";
+			String ipAdd = "192.168.122.231";
 			sipFactory = SipFactory.getInstance();
 			sipFactory.setPathName("gov.nist");
 
@@ -218,7 +218,7 @@ public class SipClient implements SipListener {
 				clientTransaction.sendRequest();
 
 //				GUI.setTRANGTHAI(clientTransaction.getState().toString());
-				GUI.displayMessage("Gởi : " + request.toString());
+				GUI.textarea.appendText("Gởi : " + request.toString());
 				break;
 				}
 				catch (Exception ex) {
@@ -270,7 +270,7 @@ public class SipClient implements SipListener {
 				clientTransaction.sendRequest();
 
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
-				GUI.displayMessage("Send : " + request.toString());
+				GUI.textarea.appendText("Send : " + request.toString());
 				break;
 			}
 
@@ -308,7 +308,7 @@ public class SipClient implements SipListener {
 //				clientTransaction.sendRequest();
 //
 //				GUI.setTRANGTHAI(clientTransaction.getState().toString());
-//				GUI.displayMessage("Gởi : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
+				//GUI.textarea.appendText("Gởi : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
 //				break;
 //			}
 
@@ -393,7 +393,7 @@ public class SipClient implements SipListener {
 				clientTransaction.sendRequest();
 				System.out.println("Send : " + request.toString());
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
-//				GUI.displayMessage("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
+				GUI.textarea.appendText("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
 				break;
 			}
 			
@@ -445,7 +445,7 @@ public class SipClient implements SipListener {
 				clientTransaction.sendRequest();
 
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
-				GUI.displayMessage("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
+				GUI.textarea.appendText("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
 				break;
 			}
 
@@ -464,7 +464,7 @@ public class SipClient implements SipListener {
 	public void processRequest(RequestEvent requestEvent) {
 		try {
 			Request request = requestEvent.getRequest();
-			GUI.displayMessage("Nhận : " + request.toString());
+			GUI.textarea.appendText("Nhận : " + request.toString());
 
 			if (request.getMethod().equals("REGISTER")) {
 				// tạo 180 Ringing
@@ -478,7 +478,7 @@ public class SipClient implements SipListener {
 				serverTransaction.sendResponse(response);
 
 				//GUI.setTRANGTHAI(serverTransaction.getState().toString());
-				GUI.displayMessage("Gởi : " + response.toString());
+				GUI.textarea.appendText("Gởi : " + response.toString());
 				System.out.println("Đã vao register cua server");
 			}
 			// khi request nhận được là INVITE
@@ -494,7 +494,7 @@ public class SipClient implements SipListener {
 				serverTransaction.sendResponse(response);
 
 				//GUI.setTRANGTHAI(serverTransaction.getState().toString());
-//				GUI.displayMessage("Send : " + response.toString());
+				GUI.textarea.appendText("Send : " + response.toString());
 
 			} // khi request nhận được là ACK
 			else if (request.getMethod().equals("ACK")) {
@@ -509,7 +509,7 @@ public class SipClient implements SipListener {
 				BYEServerTransaction = requestEvent.getServerTransaction();
 				BYEServerTransaction.sendResponse(response);
 				//GUI.setTRANGTHAI(BYEServerTransaction.getState().toString());
-//				GUI.displayMessage("Send : " + response.toString());
+				GUI.textarea.appendText("Send : " + response.toString());
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -522,7 +522,7 @@ public class SipClient implements SipListener {
 		try {
 			Response response = responseEvent.getResponse();
 
-			GUI.displayMessage("Recieved : " + response.toString());
+			GUI.textarea.appendText("Recieved : " + response.toString());
 			System.out.println("Recieved : " +response.toString());
 			// lấy CSeqHeader được dính kèm theo trong response
 			CSeqHeader cSeqHeader = (CSeqHeader) response.getHeader("CSeq");
@@ -541,16 +541,20 @@ public class SipClient implements SipListener {
 				else if (response.getStatusCode() == 200) {
 					System.out.println("Login successful");
 					
-//					Request ackRequest = clientTransaction.createAck();
+					Request ackRequest = clientTransaction.createAck();
 //					Dialog dialog = clientTransaction.getDialog();
 //					dialog.sendAck(ackRequest);
+					this.GUI.textarea.appendText("Gởi : " + ackRequest.toString());
 					GUI.changeStage();
-//					GUI.displayMessage("Gởi : " + ackRequest.toString());
+
+					
 				}else if(response.getStatusCode() == 403) {
 					GUI.ErrorDialog("Invalid user name or password");
+					
 				}else if(response.getStatusCode() == 500) {
 					GUI.ErrorDialog("Error:"+response.getStatusCode());
 				}
+			
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
 			}
 
@@ -561,8 +565,6 @@ public class SipClient implements SipListener {
 					Request ackRequest = clientTransaction.createAck();
 					Dialog dialog = clientTransaction.getDialog();
 					dialog.sendAck(ackRequest);
-
-//					GUI.displayMessage("Gởi : " + ackRequest.toString());
 				}
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
 			}

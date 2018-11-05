@@ -51,7 +51,7 @@ public class NewController extends Application implements Initializable {
 	
 	@FXML
 	private SipClient sipclient;
-	private TextArea textarea;
+	public TextArea textarea = new TextArea("");
 	SipClient sipListener;
 
 	
@@ -87,14 +87,12 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	private javafx.scene.control.TextField ContactUsername, ContactURI;
 
-	public void displayMessage(String string)
-	  {
-	    Platform.runLater(new Runnable() {
-	      @Override public void run() {
-	    	  textarea.appendText(string +"\n");  
-	      }
-	    });
-	  }
+//	public void displayMessage(String string)
+//	  {
+//	    	  textarea.setText(string +"\n");  
+//
+//	  }
+	
 	public void changeStage()
 	  {
 	    Platform.runLater(new Runnable() {
@@ -124,7 +122,7 @@ public class NewController extends Application implements Initializable {
 	@FXML
     private void ReadCSV() // read file csv
     {
-        String CsvFile = "src\\application\\User.csv";
+        String CsvFile = "src\\application\\User2.csv";
         String FieldDelimiter = ",";
 
         BufferedReader br;
@@ -152,10 +150,17 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	public void ErrorDialog(String string)
 	{
-		Alert alert = new Alert(AlertType.INFORMATION);
-        //alert.setContentText("Register Fail!");
-		alert.setHeaderText(string);
-        alert.showAndWait();
+		Platform.runLater(new Runnable() {
+		      @Override public void run() {
+		    	//Đóng form hiện tại
+
+		  		Alert alert = new Alert(AlertType.INFORMATION);
+		        //alert.setContentText("Register Fail!");
+				alert.setHeaderText(string);
+		        alert.showAndWait();
+		      }
+		    });
+
 	}
 	
 	
