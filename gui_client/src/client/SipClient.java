@@ -158,11 +158,7 @@ public class SipClient implements SipListener {
 			System.out.println("SIP đã được khởi động: " + sIP + ":" + iPort);
 
 		} catch (Exception ex) {
-			String msg = ex.getMessage();
-		    if (msg == null) {
-		        msg = ex.getClass().getName();
-		    }
-		    System.out.println("Exception: " + msg);
+			ex.printStackTrace();
 		}
 	}
 	public void register(String un, String pw) {
@@ -460,7 +456,7 @@ public class SipClient implements SipListener {
 			}
 
 		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 
@@ -516,7 +512,7 @@ public class SipClient implements SipListener {
 //				GUI.displayMessage("Send : " + response.toString());
 			}
 		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 
@@ -544,15 +540,16 @@ public class SipClient implements SipListener {
 				// kiểm tra StatusCode của response có phải là 200
 				else if (response.getStatusCode() == 200) {
 					System.out.println("Login successful");
-					Request ackRequest = clientTransaction.createAck();
-					Dialog dialog = clientTransaction.getDialog();
-					dialog.sendAck(ackRequest);
+					
+//					Request ackRequest = clientTransaction.createAck();
+//					Dialog dialog = clientTransaction.getDialog();
+//					dialog.sendAck(ackRequest);
 					GUI.changeStage();
 //					GUI.displayMessage("Gởi : " + ackRequest.toString());
 				}else if(response.getStatusCode() == 403) {
-					GUI.alert("Invalid user name or password");
-				}else {
-					GUI.alert("Error:"+response.getStatusCode());
+					GUI.ErrorDialog("Invalid user name or password");
+				}else if(response.getStatusCode() == 500) {
+					GUI.ErrorDialog("Error:"+response.getStatusCode());
 				}
 				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
 			}
@@ -578,7 +575,7 @@ public class SipClient implements SipListener {
 			// ======================
 
 		} catch (Exception ex) {
-			System.out.println("processResponse : " + ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 
