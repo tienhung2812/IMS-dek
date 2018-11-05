@@ -15,6 +15,9 @@ import java.security.acl.Group;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.glass.ui.ClipboardAssistance;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -43,6 +46,8 @@ import javafx.stage.StageStyle;
 
 public class NewController extends Application implements Initializable {
 	
+	@FXML
+	private RegisterClass classRegister;
 	@FXML
 	private TextArea textarea;
 	
@@ -79,7 +84,7 @@ public class NewController extends Application implements Initializable {
 	@FXML
     private void ReadCSV() // read file csv
     {
-        String CsvFile = "C:\\Users\\15510\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv";
+        String CsvFile = "C:\\Users\\luan.n.tran\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv";
         String FieldDelimiter = ",";
 
         BufferedReader br;
@@ -105,7 +110,7 @@ public class NewController extends Application implements Initializable {
     }
 	
 	@FXML
-	private void ErrorDialog(String string)
+	public void ErrorDialog(String string)
 	{
 		Alert alert = new Alert(AlertType.INFORMATION);
         //alert.setContentText("Register Fail!");
@@ -116,7 +121,9 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	private void handleButtonStart(ActionEvent event) throws Exception { // run button Start
 		
-		if((username.getText().equals("Luan") && password.getText().equals("123")) || (username.getText().equals("Tien") && password.getText().equals("456")))
+		this.classRegister = new RegisterClass(this);
+		classRegister.register(username.getText(), password.getText());
+		if(classRegister.info == "REGISTER-200")
 		{
 			//an form hien tai
 			Stage stage1 = (Stage)start.getScene().getWindow();
@@ -215,7 +222,7 @@ public class NewController extends Application implements Initializable {
 	public void writeTooFileCSV() throws Exception {
 	    Writer writer = null;
 	    try {
-	        File file = new File("C:\\Users\\15510\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv");
+	        File file = new File("C:\\Users\\luan.n.tran\\Desktop\\IMS-dek\\gui_client\\src\\application\\User.csv");
 	        writer = new BufferedWriter(new FileWriter(file));
 	        for (User user : datalist) {
 
