@@ -14,6 +14,7 @@ import javax.sip.Dialog;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
 import javax.sip.ListeningPoint;
+import javax.sip.ObjectInUseException;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
@@ -45,16 +46,16 @@ import application.NewController;
 
 public class SipClient implements SipListener {
 	SipFactory sipFactory;
-	SipStack sipStack;
-	ListeningPoint listeningPoint;
-	SipProvider sipProvider;
+	public SipStack sipStack;
+	public ListeningPoint listeningPoint;
+	public SipProvider sipProvider;
 	HeaderFactory headerFactory;
 	AddressFactory addressFactory;
 	MessageFactory messageFactory;
 
-	String username="";
-	String password="";
-	
+	String username = "";
+	String password = "";
+
 	String sIP;
 	int iPort;
 	NewController GUI;
@@ -79,8 +80,7 @@ public class SipClient implements SipListener {
 		String algrm = ah_c.getAlgorithm();
 		String realm = ah_c.getRealm();
 		MessageDigest mdigest;
-		
-		
+
 		try {
 			mdigest = MessageDigest.getInstance(algrm);
 
@@ -124,7 +124,7 @@ public class SipClient implements SipListener {
 		return new String(c);
 	}
 
-	public SipClient(NewController gui) {
+	public SipClient(NewController gui) throws ObjectInUseException {
 		try {
 			this.GUI = gui;
 			String ipAdd = "192.168.122.231";
@@ -135,17 +135,19 @@ public class SipClient implements SipListener {
 			properties.setProperty("javax.sip.STACK_NAME", "sipStack");
 			properties.setProperty("javax.sip.IP_ADDRESS", ipAdd);
 			properties.setProperty("javax.sip.OUTBOUND_PROXY", "192.168.122.39:5060/UDP");
+		
 			sipStack = sipFactory.createSipStack(properties);
 
-//			sIP = InetAddress.getLocalHost().getHostAddress();
+			// sIP = InetAddress.getLocalHost().getHostAddress();
 			// System.out.print(sIP);
 			sIP = ipAdd;
 
 			iPort = 5060;
 			String protocol = "udp";
+
 			listeningPoint = sipStack.createListeningPoint(sIP, iPort, protocol);
-			
 			sipProvider = sipStack.createSipProvider(listeningPoint);
+
 			sipProvider.addSipListener(this);
 			headerFactory = sipFactory.createHeaderFactory();
 			addressFactory = sipFactory.createAddressFactory();
@@ -161,87 +163,85 @@ public class SipClient implements SipListener {
 			ex.printStackTrace();
 		}
 	}
+
 	public void register(String un, String pw) {
 		username = un;
 		password = pw;
 		sendRequest("REGISTER");
 	}
-	public void sendRequest(String typeRequest)  {
+
+	public void sendRequest(String typeRequest) {
 		try {
 			switch (typeRequest) {
 
 			case "REGISTER": {
 				try {
-				isRegister = true;
-//				int tag = Math.abs((new Random()).nextInt());
-				int tag = Math.abs((new Random()).nextInt());
+					isRegister = true;
+					// int tag = Math.abs((new Random()).nextInt());
+					int tag = Math.abs((new Random()).nextInt());
 
-				String userName = username;
-				String nameAddress ="sip:"+userName + "@open-ims.test";
-				System.out.println(userName+" "+nameAddress);
-				Address fromAddress = addressFactory.createAddress(nameAddress);
-				fromAddress.setDisplayName(userName);
-				FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
-				
-				
-				String userNameTo = username;
-				String nameAddressTo ="sip:"+userNameTo + "@open-ims.test";
-				System.out.println(userNameTo+" "+nameAddressTo);
-				Address toAddress = addressFactory.createAddress(nameAddressTo);
-				toAddress.setDisplayName(userNameTo);
-				ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
-				
+					String userName = username;
+					String nameAddress = "sip:" + userName + "@open-ims.test";
+					System.out.println(userName + " " + nameAddress);
+					Address fromAddress = addressFactory.createAddress(nameAddress);
+					fromAddress.setDisplayName(userName);
+					FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
 
-				ViaHeader viaHeader = headerFactory.createViaHeader(sIP, iPort, "udp", null);
-				ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
-				viaHeaders.add(viaHeader);
+					String userNameTo = username;
+					String nameAddressTo = "sip:" + userNameTo + "@open-ims.test";
+					System.out.println(userNameTo + " " + nameAddressTo);
+					Address toAddress = addressFactory.createAddress(nameAddressTo);
+					toAddress.setDisplayName(userNameTo);
+					ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
 
-				MaxForwardsHeader maxForwardsHeader = this.headerFactory.createMaxForwardsHeader(70);
+					ViaHeader viaHeader = headerFactory.createViaHeader(sIP, iPort, "udp", null);
+					ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
+					viaHeaders.add(viaHeader);
 
-				CallIdHeader callIdHeader = this.sipProvider.getNewCallId();
+					MaxForwardsHeader maxForwardsHeader = this.headerFactory.createMaxForwardsHeader(70);
 
-				CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L, "REGISTER");
+					CallIdHeader callIdHeader = this.sipProvider.getNewCallId();
 
-				URI requestURI = toAddress.getURI();
-				System.out.println(requestURI.toString());
-				Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader, cSeqHeader,
-						fromHeader, toHeader, viaHeaders, maxForwardsHeader);
-				
-//				ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(1000000000);
-//				expiresHeader.setExpires(1000000000);
-//				request.addHeader(expiresHeader);
+					CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L, "REGISTER");
 
-				request.addHeader(contactHeader);
-				
-				System.out.println("\n\n" + "\nRequest la: " + request.toString());
-				clientTransaction = sipProvider.getNewClientTransaction(request);
-				clientTransaction.sendRequest();
+					URI requestURI = toAddress.getURI();
+					System.out.println(requestURI.toString());
+					Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader,
+							cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwardsHeader);
 
-//				GUI.setTRANGTHAI(clientTransaction.getState().toString());
-				GUI.textarea.appendText("Gởi : " + request.toString());
-				break;
-				}
-				catch (Exception ex) {
+					// ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(1000000000);
+					// expiresHeader.setExpires(1000000000);
+					// request.addHeader(expiresHeader);
+
+					request.addHeader(contactHeader);
+
+					System.out.println("\n\n" + "\nRequest la: " + request.toString());
+					clientTransaction = sipProvider.getNewClientTransaction(request);
+					clientTransaction.sendRequest();
+
+					// GUI.setTRANGTHAI(clientTransaction.getState().toString());
+					GUI.textarea.appendText("Gởi : " + request.toString());
+					break;
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-				
+
 			}
-			
+
 			case "DEREGISTER": {
 				isRegister = false;
 				int tag = Math.abs((new Random()).nextInt());
 
 				String userName = username;
-				String nameAddress ="sip:"+userName + "@open-ims.test";
-				System.out.println(userName+" "+nameAddress);
+				String nameAddress = "sip:" + userName + "@open-ims.test";
+				System.out.println(userName + " " + nameAddress);
 				Address fromAddress = addressFactory.createAddress(nameAddress);
 				fromAddress.setDisplayName(userName);
 				FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
-				
-				
+
 				String userNameTo = username;
-				String nameAddressTo ="sip:"+userNameTo + "@open-ims.test";
-				System.out.println(userNameTo+" "+nameAddressTo);
+				String nameAddressTo = "sip:" + userNameTo + "@open-ims.test";
+				System.out.println(userNameTo + " " + nameAddressTo);
 				Address toAddress = addressFactory.createAddress(nameAddressTo);
 				toAddress.setDisplayName(userNameTo);
 				ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
@@ -257,10 +257,10 @@ public class SipClient implements SipListener {
 				CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L, "REGISTER");
 
 				URI requestURI = toAddress.getURI();
-				
+
 				Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader, cSeqHeader,
 						fromHeader, toHeader, viaHeaders, maxForwardsHeader);
-				
+
 				ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(0);
 				request.addHeader(expiresHeader);
 
@@ -269,74 +269,79 @@ public class SipClient implements SipListener {
 				clientTransaction = sipProvider.getNewClientTransaction(request);
 				clientTransaction.sendRequest();
 
-				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
-				GUI.textarea.appendText("Send : " + request.toString());
+				// GUI.setTRANGTHAI(clientTransaction.getState().toString());
+				System.out.println("Send : " + request.toString());
 				break;
 			}
 
-//			case "INVITE": {
+			// case "INVITE": {
 
-//				// địa chỉ server
-//				Address toAddress = addressFactory.createAddress(GUI.getUAS());
-//				// địa chỉ AOR
-//				Address fromAddress = addressFactory.createAddress(GUI.getAOR());
-//				// tạo To header
-//				ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
-//				// tạo From Header
-//				FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, "456248");
-//				// tạo Via Header
-//				ViaHeader viaHeader = headerFactory.createViaHeader(sIP, iPort, "udp", null);
-//				ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
-//				viaHeaders.add(viaHeader);
-//				// tạo Max-Forwards header
-//				MaxForwardsHeader maxForwardsHeader = headerFactory.createMaxForwardsHeader(70);
-//				// tạo Call-ID header
-//				CallIdHeader callIdHeader = sipProvider.getNewCallId();
-//				// tạo CSeq header
-//				CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L, "INVITE");
-//
-//				// tạo Sip Request
-//				URI requestURI = toAddress.getURI(); // địa chỉ Destination phải chuyển sang địa chỉ URI
-//				Request request = messageFactory.createRequest(requestURI, "INVITE", callIdHeader, cSeqHeader,
-//						fromHeader, toHeader, viaHeaders, maxForwardsHeader);
-//
-//				// bổ sung contact Address vào Request
-//				request.addHeader(contactHeader);
-//
-//				// gởi Request
-//				clientTransaction = sipProvider.getNewClientTransaction(request);
-//				clientTransaction.sendRequest();
-//
-//				GUI.setTRANGTHAI(clientTransaction.getState().toString());
-				//GUI.textarea.appendText("Gởi : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
-//				break;
-//			}
+			// // địa chỉ server
+			// Address toAddress = addressFactory.createAddress(GUI.getUAS());
+			// // địa chỉ AOR
+			// Address fromAddress = addressFactory.createAddress(GUI.getAOR());
+			// // tạo To header
+			// ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
+			// // tạo From Header
+			// FromHeader fromHeader = headerFactory.createFromHeader(fromAddress,
+			// "456248");
+			// // tạo Via Header
+			// ViaHeader viaHeader = headerFactory.createViaHeader(sIP, iPort, "udp", null);
+			// ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
+			// viaHeaders.add(viaHeader);
+			// // tạo Max-Forwards header
+			// MaxForwardsHeader maxForwardsHeader =
+			// headerFactory.createMaxForwardsHeader(70);
+			// // tạo Call-ID header
+			// CallIdHeader callIdHeader = sipProvider.getNewCallId();
+			// // tạo CSeq header
+			// CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L, "INVITE");
+			//
+			// // tạo Sip Request
+			// URI requestURI = toAddress.getURI(); // địa chỉ Destination phải chuyển sang
+			// địa chỉ URI
+			// Request request = messageFactory.createRequest(requestURI, "INVITE",
+			// callIdHeader, cSeqHeader,
+			// fromHeader, toHeader, viaHeaders, maxForwardsHeader);
+			//
+			// // bổ sung contact Address vào Request
+			// request.addHeader(contactHeader);
+			//
+			// // gởi Request
+			// clientTransaction = sipProvider.getNewClientTransaction(request);
+			// clientTransaction.sendRequest();
+			//
+			// GUI.setTRANGTHAI(clientTransaction.getState().toString());
+			// GUI.textarea.appendText("Gởi : " + request.toString());// hiển thị nội dung
+			// Request trong txtHIENTHI
+			// break;
+			// }
 
-//			case Request.BYE: {
-//
-//				// lấy ra Dialog đang tồn tại phía UAC
-//				Dialog dialog = clientTransaction.getDialog();
-//
-//				// tạo 1 BYE request
-//				Request ByeRequest = dialog.createRequest("BYE");
-//
-//				// thêm contactHeader đến BYE request
-//				ByeRequest.addHeader(contactHeader);
-//
-//				// tạo ra 1 ClientTransaction mới để gởi BYE request
-//				BYEClientTransaction = sipProvider.getNewClientTransaction(ByeRequest);
-//				dialog.sendRequest(BYEClientTransaction);
-//
-//				//GUI.setTRANGTHAI(BYEClientTransaction.getState().toString());
-//				GUI.displayMessage("Send : " + ByeRequest.toString());
-//
-//			}
+			// case Request.BYE: {
+			//
+			// // lấy ra Dialog đang tồn tại phía UAC
+			// Dialog dialog = clientTransaction.getDialog();
+			//
+			// // tạo 1 BYE request
+			// Request ByeRequest = dialog.createRequest("BYE");
+			//
+			// // thêm contactHeader đến BYE request
+			// ByeRequest.addHeader(contactHeader);
+			//
+			// // tạo ra 1 ClientTransaction mới để gởi BYE request
+			// BYEClientTransaction = sipProvider.getNewClientTransaction(ByeRequest);
+			// dialog.sendRequest(BYEClientTransaction);
+			//
+			// //GUI.setTRANGTHAI(BYEClientTransaction.getState().toString());
+			// GUI.displayMessage("Send : " + ByeRequest.toString());
+			//
+			// }
 			}
-		
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-}
+	}
 
 	public void sendResponse(String typeRequest, Response response) {
 		try {
@@ -348,20 +353,19 @@ public class SipClient implements SipListener {
 				int tag = Math.abs((new Random()).nextInt());
 
 				String userName = username;
-				String nameAddress ="sip:"+userName + "@open-ims.test";
-				System.out.println(userName+" "+nameAddress);
+				String nameAddress = "sip:" + userName + "@open-ims.test";
+				System.out.println(userName + " " + nameAddress);
 				Address fromAddress = addressFactory.createAddress(nameAddress);
 				fromAddress.setDisplayName(userName);
 				FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
-				
-				
+
 				String userNameTo = username;
-				String nameAddressTo ="sip:"+userNameTo + "@open-ims.test";
-				System.out.println(userNameTo+" "+nameAddressTo);
+				String nameAddressTo = "sip:" + userNameTo + "@open-ims.test";
+				System.out.println(userNameTo + " " + nameAddressTo);
 				Address toAddress = addressFactory.createAddress(nameAddressTo);
 				toAddress.setDisplayName(userNameTo);
 				ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
-				
+
 				String password = this.password;
 
 				ViaHeader viaHeader = headerFactory.createViaHeader(sIP, iPort, "udp", null);
@@ -375,14 +379,14 @@ public class SipClient implements SipListener {
 				CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(2L, "REGISTER");
 
 				URI requestURI = toAddress.getURI();
-				
+
 				Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader, cSeqHeader,
 						fromHeader, toHeader, viaHeaders, maxForwardsHeader);
 
 				AuthorizationHeader authHeader = authorizationHeader(headerFactory, response, request, userName,
 						password);
 				request.addHeader(authHeader);
-				
+
 				ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(1000000000);
 				expiresHeader.setExpires(1000000000);
 				request.addHeader(expiresHeader);
@@ -392,26 +396,25 @@ public class SipClient implements SipListener {
 				clientTransaction = sipProvider.getNewClientTransaction(request);
 				clientTransaction.sendRequest();
 				System.out.println("Send : " + request.toString());
-				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
+				// GUI.setTRANGTHAI(clientTransaction.getState().toString());
 				GUI.textarea.appendText("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
 				break;
 			}
-			
+
 			case "DEREGISTER": {
 				isRegister = false;
 				int tag = Math.abs((new Random()).nextInt());
 
 				String userName = username;
-				String nameAddress ="sip:"+userName + "@open-ims.test";
-				System.out.println(userName+" "+nameAddress);
+				String nameAddress = "sip:" + userName + "@open-ims.test";
+				System.out.println(userName + " " + nameAddress);
 				Address fromAddress = addressFactory.createAddress(nameAddress);
 				fromAddress.setDisplayName(userName);
 				FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
-				
-				
+
 				String userNameTo = username;
-				String nameAddressTo ="sip:"+userNameTo + "@open-ims.test";
-				System.out.println(userNameTo+" "+nameAddressTo);
+				String nameAddressTo = "sip:" + userNameTo + "@open-ims.test";
+				System.out.println(userNameTo + " " + nameAddressTo);
 				Address toAddress = addressFactory.createAddress(nameAddressTo);
 				toAddress.setDisplayName(userNameTo);
 				ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
@@ -427,14 +430,14 @@ public class SipClient implements SipListener {
 				CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(2L, "REGISTER");
 
 				URI requestURI = toAddress.getURI();
-				
+
 				Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader, cSeqHeader,
 						fromHeader, toHeader, viaHeaders, maxForwardsHeader);
 
 				AuthorizationHeader authHeader = authorizationHeader(headerFactory, response, request, userName,
 						userName);
 				request.addHeader(authHeader);
-				
+
 				ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(0);
 				expiresHeader.setExpires(0);
 				request.addHeader(expiresHeader);
@@ -444,15 +447,15 @@ public class SipClient implements SipListener {
 				clientTransaction = sipProvider.getNewClientTransaction(request);
 				clientTransaction.sendRequest();
 
-				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
-				GUI.textarea.appendText("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
+				// GUI.setTRANGTHAI(clientTransaction.getState().toString());
+				System.out.println("Send : " + request.toString());// hiển thị nội dung Request trong txtHIENTHI
 				break;
 			}
 
-//			case "INVITE": {
-//
-//				break;
-//			}
+			// case "INVITE": {
+			//
+			// break;
+			// }
 			}
 
 		} catch (Exception ex) {
@@ -477,7 +480,7 @@ public class SipClient implements SipListener {
 				serverTransaction = sipProvider.getNewServerTransaction(request);
 				serverTransaction.sendResponse(response);
 
-				//GUI.setTRANGTHAI(serverTransaction.getState().toString());
+				// GUI.setTRANGTHAI(serverTransaction.getState().toString());
 				GUI.textarea.appendText("Gởi : " + response.toString());
 				System.out.println("Đã vao register cua server");
 			}
@@ -493,12 +496,12 @@ public class SipClient implements SipListener {
 				serverTransaction = sipProvider.getNewServerTransaction(request);
 				serverTransaction.sendResponse(response);
 
-				//GUI.setTRANGTHAI(serverTransaction.getState().toString());
+				// GUI.setTRANGTHAI(serverTransaction.getState().toString());
 				GUI.textarea.appendText("Send : " + response.toString());
 
 			} // khi request nhận được là ACK
 			else if (request.getMethod().equals("ACK")) {
-				//GUI.setTRANGTHAI(serverTransaction.getState().toString());
+				// GUI.setTRANGTHAI(serverTransaction.getState().toString());
 
 			} // khi request nhận được là BYE
 			else if (request.getMethod().equals("BYE")) {
@@ -508,7 +511,7 @@ public class SipClient implements SipListener {
 				// tạo ra 1 ServerTransaction mới để gởi response
 				BYEServerTransaction = requestEvent.getServerTransaction();
 				BYEServerTransaction.sendResponse(response);
-				//GUI.setTRANGTHAI(BYEServerTransaction.getState().toString());
+				// GUI.setTRANGTHAI(BYEServerTransaction.getState().toString());
 				GUI.textarea.appendText("Send : " + response.toString());
 			}
 		} catch (Exception ex) {
@@ -517,45 +520,71 @@ public class SipClient implements SipListener {
 	}
 
 	// phía client
-//	@SuppressWarnings("deprecation")
+
+	public SipClient getSipListener() {
+		return this;
+	}
+
+	public void terminate() // dong sipStack hien tai.
+	{
+		sipProvider.removeSipListener(this);
+		try {
+			sipStack.deleteListeningPoint(listeningPoint);
+		} catch (ObjectInUseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			sipStack.deleteSipProvider(sipProvider);
+		} catch (ObjectInUseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.sipStack.stop();
+	}
+	// @SuppressWarnings("deprecation")
 	public void processResponse(ResponseEvent responseEvent) {
 		try {
 			Response response = responseEvent.getResponse();
 
 			GUI.textarea.appendText("Recieved : " + response.toString());
-			System.out.println("Recieved : " +response.toString());
+			System.out.println("Recieved : " + response.toString());
 			// lấy CSeqHeader được dính kèm theo trong response
 			CSeqHeader cSeqHeader = (CSeqHeader) response.getHeader("CSeq");
 
-						
 			if (cSeqHeader.getMethod().equals("REGISTER")) {
 				if (response.getStatusCode() == 401) {
 					if (isRegister == true) {
-					sendResponse("REGISTER", response);
-					}
-					else {
+						sendResponse("REGISTER", response);
+					} else {
 						sendResponse("DEREGISTER", response);
 					}
 				}
 				// kiểm tra StatusCode của response có phải là 200
 				else if (response.getStatusCode() == 200) {
-					System.out.println("Login successful");
-					
-					Request ackRequest = clientTransaction.createAck();
-//					Dialog dialog = clientTransaction.getDialog();
-//					dialog.sendAck(ackRequest);
-					this.GUI.textarea.appendText("Gởi : " + ackRequest.toString());
-					GUI.changeStage();
+					// System.out.println("Login successful");
+					if (isRegister == true) {
+						Request ackRequest = clientTransaction.createAck();
+						// Dialog dialog = clientTransaction.getDialog();
+						// dialog.sendAck(ackRequest);
+						this.GUI.textarea.appendText("Gởi : " + ackRequest.toString());
+						GUI.changeStageRegister();					
+					}
+					else if(isRegister == false)
+					{
+						terminate();
+					}
 
-					
-				}else if(response.getStatusCode() == 403) {
+				} else if (response.getStatusCode() == 403) {
+					terminate();
 					GUI.ErrorDialog("Invalid user name or password");
-					
-				}else if(response.getStatusCode() == 500) {
-					GUI.ErrorDialog("Error:"+response.getStatusCode());
+
+				} else if (response.getStatusCode() == 500) {
+					terminate();
+					GUI.ErrorDialog("Error:" + response.getStatusCode());
 				}
-			
-				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
+
+				// GUI.setTRANGTHAI(clientTransaction.getState().toString());
 			}
 
 			if (cSeqHeader.getMethod().equals("INVITE")) {
@@ -565,14 +594,16 @@ public class SipClient implements SipListener {
 					Request ackRequest = clientTransaction.createAck();
 					Dialog dialog = clientTransaction.getDialog();
 					dialog.sendAck(ackRequest);
+					terminate();
 				}
-				//GUI.setTRANGTHAI(clientTransaction.getState().toString());
+				// GUI.setTRANGTHAI(clientTransaction.getState().toString());
 			}
 			// =====================
 
 			// nếu kiểu request là BYE
 			if (cSeqHeader.getMethod().equals("BYE")) {
-				//GUI.setTRANGTHAI(BYEClientTransaction.getState().toString());
+				terminate();
+				// GUI.setTRANGTHAI(BYEClientTransaction.getState().toString());
 			}
 			// ======================
 
@@ -592,5 +623,7 @@ public class SipClient implements SipListener {
 
 	public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
 	}
+	
+
 
 }
