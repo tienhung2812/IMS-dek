@@ -28,10 +28,7 @@ import javax.media.rtp.SessionAddress;
 import javax.media.rtp.event.NewReceiveStreamEvent;
 import javax.media.rtp.event.ReceiveStreamEvent;
 
-/**
- *
- * @author KhangDang
- */
+
 public class VoiceTool implements ReceiveStreamListener {
 
     private Processor processor;

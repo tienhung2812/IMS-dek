@@ -15,10 +15,7 @@ import javax.media.RealizeCompleteEvent;
 import javax.media.datasink.EndOfStreamEvent;
 import javax.media.protocol.DataSource;
 
-/**
- *
- * @author KhangDang
- */
+
 public class RingTool {
 
     private Player player;
@@ -27,7 +24,7 @@ public class RingTool {
         try {
 
             MediaLocator ml = new MediaLocator(filename);
-            // play tập tin 
+
             player = Manager.createRealizedPlayer(ml);
             player.start();
 

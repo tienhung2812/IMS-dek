@@ -5,10 +5,6 @@
  */
 package Call;
 
-/**
- *
- * @author KhangDang
- */
 public class SdpInfo {
 
     private String IpSender;

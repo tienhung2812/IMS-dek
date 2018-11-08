@@ -17,10 +17,7 @@ import javax.sdp.SessionName;
 import javax.sdp.Time;
 import javax.sdp.Version;
 
-/**
- *
- * @author KhangDang
- */
+
 public class SdpTool {
 
     private SdpFactory sdpFactory;
