@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package proxy;
+package Call;
 
 import java.util.Date;
 import java.util.Vector;
@@ -25,9 +25,9 @@ public class SdpTool {
 
     private SdpFactory sdpFactory;
     
-    // senderInfo chứa thông tin trong SDP message gởi đi.
+    // senderInfo chá»©a thÃ´ng tin trong SDP message gá»Ÿi Ä‘i.
     private SdpInfo senderInfo;
-    // receiverInfo chứa thông tin trong SDP message nhận được.
+    // receiverInfo chá»©a thÃ´ng tin trong SDP message nháº­n Ä‘Æ°á»£c.
     private SdpInfo receiverInfo;
 
     public SdpTool() {
@@ -36,35 +36,35 @@ public class SdpTool {
 
     public byte[] createSdp(SdpInfo senderInfo) {
         try {
-            // lưu lại thông tin người gởi trong biến senderInfo
+            // lÆ°u láº¡i thÃ´ng tin ngÆ°á»�i gá»Ÿi trong biáº¿n senderInfo
             this.senderInfo = senderInfo;
 
-            // tạo v-line
+            // táº¡o v-line
             Version version = sdpFactory.createVersion(0);
             
-            // tạo o-line
+            // táº¡o o-line
             long ss = sdpFactory.getNtpTime(new Date());
             Origin origin = sdpFactory.createOrigin("-", ss, ss, "IN", "IP4", senderInfo.getIpSender());
             
-            // tạo s-line
+            // táº¡o s-line
             SessionName sessionName = sdpFactory.createSessionName("-");
    
-            // tạo t-line
+            // táº¡o t-line
             Time time = sdpFactory.createTime();
             Vector timeVector = new Vector();
             timeVector.add(time);
 
-            // Định nghĩa media format
+            // Ä�á»‹nh nghÄ©a media format
             int[] audioformat = new int[1];
             audioformat[0] = senderInfo.getVoiceFormat();
 
-            // tạo m-line
+            // táº¡o m-line
             MediaDescription audioMediaDescription = sdpFactory.createMediaDescription("audio", senderInfo.getVoicePort(), 1, "RTP/AVP", audioformat);
 
             Vector mediaDescriptionVector = new Vector();
             mediaDescriptionVector.add(audioMediaDescription);
 
-            // tạo SDP message 
+            // táº¡o SDP message 
             SessionDescription sdpMessage = sdpFactory.createSessionDescription();
             sdpMessage.setVersion(version);
             sdpMessage.setOrigin(origin);
@@ -83,21 +83,21 @@ public class SdpTool {
         try {
             receiverInfo = new SdpInfo();
 
-            // tái tạo lại SDP message bằng JAIN SDP
+            // tÃ¡i táº¡o láº¡i SDP message báº±ng JAIN SDP
             SessionDescription recSdp = sdpFactory.createSessionDescription(new String(content));
 
-            // lấy ra địa chỉ IP người gởi trong o-line
+            // láº¥y ra Ä‘á»‹a chá»‰ IP ngÆ°á»�i gá»Ÿi trong o-line
             String myIpAddress = recSdp.getOrigin().getAddress();
             receiverInfo.setIpSender(myIpAddress);
 
             Vector recMediaDescriptionVector = recSdp.getMediaDescriptions(false);
-            // lấy ra m-line
+            // láº¥y ra m-line
             MediaDescription myAudioDescription = (MediaDescription) recMediaDescriptionVector.elementAt(0);
-             // lấy ra port trong m-line
+             // láº¥y ra port trong m-line
             int voicePort = myAudioDescription.getMedia().getMediaPort();
             receiverInfo.setVoicePort(voicePort);
 
-             // lấy ra media format trong m-line
+             // láº¥y ra media format trong m-line
             Vector voiceFormatVector = myAudioDescription.getMedia().getMediaFormats(false);
             int voiceFormat = Integer.parseInt(voiceFormatVector.elementAt(0).toString());
             receiverInfo.setVoiceFormat(voiceFormat);

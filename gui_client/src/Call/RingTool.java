@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package proxy;
+package Call;
 
 import javax.media.ControllerEvent;
 import javax.media.ControllerListener;
@@ -25,7 +25,7 @@ public class RingTool {
 
     public void playRing(String filename) {
         try {
-            // tạo media locator của tập tin
+
             MediaLocator ml = new MediaLocator(filename);
             // play tập tin 
             player = Manager.createRealizedPlayer(ml);

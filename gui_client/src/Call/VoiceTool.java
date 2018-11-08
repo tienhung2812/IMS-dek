@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package proxy;
+package Call;
 
 import com.sun.media.rtp.RTPSessionMgr;
 import java.io.IOException;
@@ -75,23 +75,23 @@ public class VoiceTool implements ReceiveStreamListener {
 
     public void startMedia() {
         try {
-            // bắt media stream từ soundcard
+            // báº¯t media stream tá»« soundcard
             MediaLocator locator = new MediaLocator("javasound://44100");
 
             DataSource dataSource = Manager.createDataSource(locator);
 
-            // media stream được truyền qua mạng và loại media là RAW_RTP 
+            // media stream Ä‘Æ°á»£c truyá»�n qua máº¡ng vÃ  loáº¡i media lÃ  RAW_RTP 
             ContentDescriptor outputFile = new ContentDescriptor(ContentDescriptor.RAW_RTP);
 
-            // kiểu định dạng audio
+            // kiá»ƒu Ä‘á»‹nh dáº¡ng audio
             AudioFormat[] aFormat = new AudioFormat[1];
             aFormat[0] = new AudioFormat(AudioFormat.LINEAR);
 
-            // tạo đối tượng Processor
+            // táº¡o Ä‘á»‘i tÆ°á»£ng Processor
             ProcessorModel processorModel = new ProcessorModel(dataSource, aFormat, outputFile);
             processor = Manager.createRealizedProcessor(processorModel);
 
-            // tạo DataSource đầu ra
+            // táº¡o DataSource Ä‘áº§u ra
             outDataSource = processor.getDataOutput();
 
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
-encoding//src/Call/Call.java=UTF-8
+encoding//src/Call/SdpTool.java=UTF-8
+encoding//src/Call/VoiceTool.java=UTF-8
 encoding//src/Main/ContactController.java=UTF-8
 encoding//src/Main/MainController.java=UTF-8
 encoding//src/Main/RegisterController.java=UTF-8

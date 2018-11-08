@@ -28,7 +28,7 @@
             </Tooltip>
          </tooltip>
       </Button>
-      <Button layoutX="389.0" layoutY="481.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="60.0" style=" -fx-background-color: #FFFF;">
+      <Button fx:id="btnCall" layoutX="389.0" layoutY="481.0" mnemonicParsing="false" onAction="#handleButtonCall" prefHeight="68.0" prefWidth="60.0" style=" -fx-background-color: #FFFF;">
          <graphic>
             <ImageView fitHeight="68.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -43,7 +43,7 @@
                </font>
             </Tooltip>
          </tooltip></Button>
-      <Button layoutX="471.0" layoutY="465.0" mnemonicParsing="false" prefHeight="109.0" prefWidth="100.0" style=" -fx-background-color: #FFFF;">
+      <Button fx:id="btnCancel" layoutX="471.0" layoutY="465.0" mnemonicParsing="false" onAction="#handleButtonCancel" prefHeight="109.0" prefWidth="100.0" style=" -fx-background-color: #FFFF;">
          <graphic>
             <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
                <image>

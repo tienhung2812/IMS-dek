@@ -2,28 +2,28 @@ package application;
 
 public class User {
 	
-	private String username, phone;
+	private String username="", phone="";
 	public User()
 	{
-		setUsername(setPhone(""));	
+		this.username = this.phone = "";
 	}
 	public User(String username, String phone)
 	{
-		this.setPhone(phone);
-		this.setUsername(username);
+		this.username = username;
+		this.phone = phone;
 	}
 	public String getUsername() {
-		return username;
+		return this.username;
 	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
 	public String getPhone() {
-		return phone;
+		return this.phone;
 	}
-	public String setPhone(String phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
-		return phone;
+
 	}
 
 }

@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.sip.ObjectInUseException;
+import javax.sip.SipListener;
 import javax.sip.SipProvider;
 
 import com.sun.glass.ui.ClipboardAssistance;
@@ -60,12 +61,14 @@ public class NewController extends Application implements Initializable {
 	public SipClient sipListener;
 	static SipClient temp;
 
+
 	
 	@FXML
-	private javafx.scene.control.Button start, deregister, Add, Remove ;
+	private javafx.scene.control.Button start, deregister, Add, Remove, btnCall,  btnCancel ;
 	
 	@FXML
 	private javafx.scene.control.TextField username;
+	
 	
 	public String getUserName() {
 		return username.getText();
@@ -113,7 +116,7 @@ public class NewController extends Application implements Initializable {
 	    	{
 	    		try {
 	    			count++;
-	    			if(count == 4)
+	    			if(count == 2)
 	    				break;
 	    			Thread.sleep(1000);
 	    		}catch (InterruptedException e) {
@@ -146,29 +149,33 @@ public class NewController extends Application implements Initializable {
 	@FXML
     private void ReadCSV() // read file csv
     {
-        String CsvFile = "src\\application\\User2.csv";
-        String FieldDelimiter = ",";
-
-        BufferedReader br;
-
-        try {
-            br = new BufferedReader(new FileReader(CsvFile));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] fields = line.split(FieldDelimiter, -1);
-                
-                //if(fields[0].equals(username.getText()))
-                //{
-	                User user = new User(fields[0], fields[1]);
-	                datalist.add(user);
-                //}
-
-            }
-            
-        } catch (IOException ex) {
-            Logger.getLogger(NewController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		Platform.runLater(new Runnable() {
+		      @Override public void run() {
+		        String CsvFile = "src\\application\\User2.csv";
+		        String FieldDelimiter = ",";
+		
+		        BufferedReader br;
+		
+		        try {
+		            br = new BufferedReader(new FileReader(CsvFile));
+		
+		            String line;
+		            while ((line = br.readLine()) != null) {
+		                String[] fields = line.split(FieldDelimiter, -1);
+		                
+		                //if(fields[0].equals(username.getText()))
+		                //{
+			                User user = new User(fields[0], fields[1]);
+			                datalist.add(user);
+		                //}
+		
+		            }
+		            
+		        } catch (IOException ex) {
+		            Logger.getLogger(NewController.class.getName()).log(Level.SEVERE, null, ex);
+		        }
+        
+		      }});
     }
 	
 	@FXML
@@ -254,9 +261,6 @@ public class NewController extends Application implements Initializable {
 		sipListener = temp.getSipListener();
 		sipListener.sendRequest("DEREGISTER");
 		
-		Platform.runLater(new Runnable() {
-		      @Override public void run() {
-
 		    	
 		    	Stage stage = (Stage)deregister.getScene().getWindow();
 		  		stage.close();
@@ -269,8 +273,6 @@ public class NewController extends Application implements Initializable {
 					e.printStackTrace();
 				}//luu ds contact vao file csv
 
-		      }
-		    });
 		stageRegister.show();
 
 	}
@@ -297,16 +299,29 @@ public class NewController extends Application implements Initializable {
 	    } 
 	}
 	
-	
-	public String getURIContactFromTable()
-	{
+	@FXML
+	private void handleButtonCall(ActionEvent event) throws Exception { // button call
 		User selectedItem = tableview.getSelectionModel().getSelectedItem();
-		return selectedItem.getUsername();
+		//this.btnCancel.setDisable(true);
+		sipListener = temp.getSipListener();
+		
+		Platform.runLater(new Runnable() {
+		      @Override public void run() {
+					String URI = selectedItem.getPhone();
+					sipListener.getInfo(URI);
+		      }});
+	}
+	
+	@FXML
+	private void handleButtonCancel(ActionEvent event) throws Exception { // button call
+		sipListener = temp.getSipListener();
+		sipListener.getCancelCall();
 	}
 	@Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
 		try {
+			
 			
 			ReadCSV(); 
 			colUsername = new TableColumn("User Name");
