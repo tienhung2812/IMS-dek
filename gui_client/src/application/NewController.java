@@ -304,12 +304,16 @@ public class NewController extends Application implements Initializable {
 		User selectedItem = tableview.getSelectionModel().getSelectedItem();
 		//this.btnCancel.setDisable(true);
 		sipListener = temp.getSipListener();
-		
-		Platform.runLater(new Runnable() {
-		      @Override public void run() {
-					String URI = selectedItem.getPhone();
-					sipListener.getInfo(URI);
-		      }});
+		if(sipListener.isUAS() == false)
+		{
+			Platform.runLater(new Runnable() {
+			      @Override public void run() {
+						String URI = selectedItem.getPhone();
+						sipListener.getInfo(URI);
+			      }});
+		}
+		else
+			sipListener.getInfo("");
 	}
 	
 	@FXML

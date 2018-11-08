@@ -218,12 +218,12 @@ public class SipClient implements SipListener {
     }
 	public void getInfo(String ct) {
 
-		contactWith = ct;
         if (isUAS()) {
             sendResponseCall();
         } 
         else {
 
+        	contactWith = ct;
             sendRequest("INVITE");
         }
 	}
@@ -622,8 +622,8 @@ public class SipClient implements SipListener {
 				System.out.println("Đã vao register cua server");
 			}
 			// khi request nhận được là INVITE
-			else if (request.getMethod().equals("INVITE")) {
-				ringServer.playRing("file://D\\RingClient.mp2");
+			if (request.getMethod().equals("INVITE")) {
+				ringServer.playRing("file://D:\\RingClient.mp2");
 				isUAS = true;
 				// tạo 180 Ringing
 				Response response = messageFactory.createResponse(180, request);
@@ -642,7 +642,7 @@ public class SipClient implements SipListener {
 	                   }
 	               };
 	               // Khởi tạo đối tượng timerS
-	               timerS = new Timer("UAS không phản hồi");
+	               timerS = new Timer(contactWith + " không phản hồi");
 	               // Lập lịch task sẽ tự động thực hiện sau 60s nữa
 	               timerS.schedule(task, 60000);
 
@@ -650,20 +650,57 @@ public class SipClient implements SipListener {
 				System.out.println("Send : " + response.toString());
 
 			} // khi request nhận được là ACK
-			else if (request.getMethod().equals("ACK")) {
+			if (request.getMethod().equals("ACK")) {
 				// GUI.setTRANGTHAI(serverTransaction.getState().toString());
+				isACK = true;
 
 			} // khi request nhận được là BYE
-			else if (request.getMethod().equals("BYE")) {
-				Response response = messageFactory.createResponse(200, request);
-				response.addHeader(contactHeader);
+			if (request.getMethod().equals("BYE")) {
+				 Response response = messageFactory.createResponse(200, request);
+	                response.addHeader(contactHeader);
+	                ServerTransaction byeServerTransaction = requestEvent.getServerTransaction();
+	                byeServerTransaction.sendResponse(response);
 
-				// tạo ra 1 ServerTransaction mới để gởi response
-				BYEServerTransaction = requestEvent.getServerTransaction();
-				BYEServerTransaction.sendResponse(response);
-				// GUI.setTRANGTHAI(BYEServerTransaction.getState().toString());
-				System.out.println("Send : " + response.toString());
+	                if (!isUAS) {
+	                    voiceClient.stopMedia();
+	                    GUI.ErrorDialog(contactWith + " da ket thuc cuoc goi !");
+	                }
+
+	                if (isUAS) {
+	                    voiceServer.stopMedia();
+	                    GUI.ErrorDialog(username+" da ket thuc cuoc goi !");
+	                }
+
+	                System.out.println("Send : " + response.toString());
+
+	                isUAS = false;
+
+	                isACK = false;
 			}
+			if (request.getMethod().equals(Request.CANCEL)) {
+                // lay INVITE request  serverTransaction
+                Request inviteReq = serverTransaction.getRequest();
+
+                // tao "487 termniated"  
+                Response response = messageFactory.createResponse(487, inviteReq);
+                serverTransaction.sendResponse(response);
+                System.out.println("send : " + response.toString());
+
+                // tao "200 OK" response danh cho CANCEL           
+                Response cancelResponse = messageFactory.createResponse(200, request);
+
+
+                ServerTransaction cancelServerTransaction = requestEvent.getServerTransaction();
+                cancelServerTransaction.sendResponse(cancelResponse);
+                System.out.println("send : " + cancelResponse.toString());
+
+                ringServer.stopRing();
+                GUI.ErrorDialog(username + " da huy cuoc goi !");
+
+                timerS.cancel();
+
+                isUAS = false;
+            }
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -790,21 +827,21 @@ public class SipClient implements SipListener {
 				if(response.getStatusCode() == 404) {
 	                ringClient.stopRing();
 
-	                GUI.ErrorDialog("Khong tim thay UAS can lien lac, do UAS chua duoc dang ki cho thiet bi!");
+	                GUI.ErrorDialog("Khong tim thay "+ contactWith +" can lien lac, do "+ contactWith +" chua duoc dang ki cho thiet bi!");
 	            }
 
 	            if (response.getStatusCode() == 486) {
 
 	                ringClient.stopRing();
 
-	                GUI.ErrorDialog( "UAS da tu choi cuoc goi!");
+	                GUI.ErrorDialog( contactWith +" da tu choi cuoc goi!");
 	            }
 			}
 			// =====================
 
 			// nếu kiểu request là BYE
 			if (cSeqHeader.getMethod().equals("BYE")) {
-				disconect();
+				terminateResponse();
 				// GUI.setTRANGTHAI(BYEClientTransaction.getState().toString());
 			}
 			// ======================
@@ -826,7 +863,7 @@ public class SipClient implements SipListener {
                 ringClient.stopRing();
 
                 System.out.println("Send : " + cancelRequest.toString());
-                GUI.ErrorDialog("Cuoc goi da bi huy khi ket noi CHUA duoc thiet lap voi UAS");
+                GUI.ErrorDialog("Cuoc goi da bi huy khi ket noi CHUA duoc thiet lap voi "+ contactWith);
 
             } else {
             	//UAC tao BYE de ket thuc cuoc goi
@@ -844,7 +881,7 @@ public class SipClient implements SipListener {
                 isACK = false;
 
                 voiceClient.stopMedia();
-                GUI.ErrorDialog("UAC da ket thuc cuoc goi voi UAS");
+                GUI.ErrorDialog(username+" da ket thuc cuoc goi voi "+ contactWith);
             }
 
         } catch (Exception ex) {
@@ -864,7 +901,7 @@ public class SipClient implements SipListener {
 	               System.out.println("Send : " + response.toString());
 	                ringServer.stopRing();
 	                timerS.cancel();
-	                GUI.ErrorDialog("UAS da tu choi ket noi voi UAC");
+	                GUI.ErrorDialog( contactWith + " da tu choi ket noi voi "+ username);
 	            } else {
 	                // UAS tao BYE de ket thuc cuoc goi
 	                Request byeRequest
@@ -879,7 +916,7 @@ public class SipClient implements SipListener {
 
 	                isACK = false;
 	                voiceServer.stopMedia();
-	                GUI.ErrorDialog("UAS da ket thuc cuoc goi voi UAC");
+	                GUI.ErrorDialog(contactWith + " da ket thuc cuoc goi");
 	            }
 	            isUAS = false;
 
