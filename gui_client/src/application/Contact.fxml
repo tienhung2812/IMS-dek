@@ -149,5 +149,11 @@
             </Tooltip>
          </tooltip>
       </Button>
+      <Label fx:id="lblUser" layoutX="21.0" layoutY="27.0">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblContactWith" layoutX="490.0" layoutY="415.0" />
    </children>
 </AnchorPane>

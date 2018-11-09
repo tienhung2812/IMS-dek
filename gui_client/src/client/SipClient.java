@@ -54,6 +54,7 @@ import Call.SdpInfo;
 import Call.SdpTool;
 import Call.VoiceTool;
 import application.NewController;
+import application.Time;
 import gov.nist.javax.sip.header.ims.ServiceRouteHeader;
 import javafx.application.Platform;
 
@@ -97,8 +98,7 @@ public class SipClient implements SipListener {
 	ServerTransaction serverTransaction;
 	ClientTransaction clientTransaction;
 	
-	ServerTransaction BYEServerTransaction;
-	ClientTransaction BYEClientTransaction;
+
 
 	public AuthorizationHeader authorizationHeader(HeaderFactory headerFactory, Response response, Request request,
 			String userName, String password) throws ParseException {
@@ -158,6 +158,7 @@ public class SipClient implements SipListener {
 
 	public SipClient(NewController gui) throws ObjectInUseException {
 		try {
+			
 			this.GUI = gui;
 			String ipAdd = "192.168.122.167";
 			sipFactory = SipFactory.getInstance();
@@ -170,7 +171,6 @@ public class SipClient implements SipListener {
 		
 			sipStack = sipFactory.createSipStack(properties);
 			// sIP = InetAddress.getLocalHost().getHostAddress();
-			System.out.print(sIP);
 			sIP = ipAdd;
 
 			iPort = 5060;
@@ -255,7 +255,6 @@ public class SipClient implements SipListener {
 			case "REGISTER": {
 				try {
 					isRegister = true;
-					// int tag = Math.abs((new Random()).nextInt());
 					int tag = Math.abs((new Random()).nextInt());
 
 					String userName = username;
@@ -283,13 +282,13 @@ public class SipClient implements SipListener {
 					CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L, "REGISTER");
 
 					URI requestURI = toAddress.getURI();
-					System.out.println(requestURI.toString());
+
 					Request request = this.messageFactory.createRequest(requestURI, "REGISTER", callIdHeader,
 							cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwardsHeader);
 
-					// ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(1000000000);
-					// expiresHeader.setExpires(1000000000);
-					// request.addHeader(expiresHeader);
+					 ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(1000000000);
+					 expiresHeader.setExpires(1000000000);
+					 request.addHeader(expiresHeader);
 
 					request.addHeader(contactHeader);
 
@@ -347,7 +346,7 @@ public class SipClient implements SipListener {
 				clientTransaction = sipProvider.getNewClientTransaction(request);
 				clientTransaction.sendRequest();
 
-				// GUI.setTRANGTHAI(clientTransaction.getState().toString());
+				System.out.println(clientTransaction.getState().toString());
 				System.out.println("Send : " + request.toString());
 				break;
 			}
@@ -362,8 +361,9 @@ public class SipClient implements SipListener {
 	            Address toAddress = addressFactory.createAddress(a);
 	            ToHeader toHeader = headerFactory.createToHeader(toAddress, null);
 
+	            int tag = Math.abs((new Random()).nextInt());//tao tag ngau nhien
 	            Address fromAddress = addressFactory.createAddress( b );
-	            FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, "564385");
+	            FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, String.valueOf(tag));
 
 	            ViaHeader viaHeader = headerFactory.createViaHeader(sIP, iPort, "udp", null);
 	            ArrayList viaHeaders = new ArrayList<>();
@@ -458,7 +458,6 @@ public class SipClient implements SipListener {
 	           // hủy bỏ lịch trình
 	           timerS.cancel();
 
-	           
 	           // thực hiện voice chat phía UAS :
 	           // thông tin về UAS trong sdpAnswer là senderInfo
 	           voiceServer.senderInfo(sdpAnswer.getSenderInfo());
@@ -467,14 +466,12 @@ public class SipClient implements SipListener {
 	           voiceServer.receiverInfo(sdpAnswer.getReceiverInfo());
 	           // khởi tạo Session
 	           voiceServer.init();
-	           // bắt đầu Session
+	           
 	           voiceServer.startMedia();
+	           
 	           // gởi send stream
 	           voiceServer.send();
 
-	           System.out.print("Send : \n" + response.toString());
-
-	          
 
 	       } catch (Exception ex) {
 	           System.out.println(ex.getMessage());
@@ -642,14 +639,14 @@ public class SipClient implements SipListener {
 	               // Khởi tạo đối tượng timerS
 	               timerS = new Timer("UE2 không phản hồi");
 	               // Lập lịch task sẽ tự động thực hiện sau 60s nữa
-	               timerS.schedule(task, 60000);
+	               timerS.schedule(task, 20000);
 
-	                // GUI.setTRANGTHAI(serverTransaction.getState().toString());
+	            //System.out.println(serverTransaction.getState().toString());
 				System.out.println("Send : " + response.toString());
 
 			} // khi request nhận được là ACK
 			if (request.getMethod().equals(Request.ACK)) {
-				// GUI.setTRANGTHAI(serverTransaction.getState().toString());
+				//System.out.println(serverTransaction.getState().toString());
 				isACK = true;
 
 			} // khi request nhận được là BYE
@@ -667,6 +664,7 @@ public class SipClient implements SipListener {
 	                if (isUAS) {
 	                    voiceServer.stopMedia();
 	                    GUI.ErrorDialog("UE1 da ket thuc cuoc goi !");
+	                    GUI.lblContactWith.setText("");
 	                }
 
 	                System.out.println("Send : " + response.toString());
@@ -770,8 +768,7 @@ public class SipClient implements SipListener {
 					if (isRegister == true) {
 						Request ackRequest = clientTransaction.createAck();
 						// Dialog dialog = clientTransaction.getDialog();
-						// dialog.sendAck(ackRequest);
-						
+						// dialog.sendAck(ackRequest);					
 						this.GUI.textarea.appendText("Gởi : " + ackRequest.toString());
 						GUI.changeStageRegister();
 						ringClient.stopRing();
@@ -810,7 +807,7 @@ public class SipClient implements SipListener {
 	                ringClient.stopRing();
 
 	                isACK = true;
-
+	                
 	                voiceClient.senderInfo(sdpOffer.getSenderInfo());
 
 	                voiceClient.receiverInfo(sdpOffer.getReceiverInfo());
@@ -822,6 +819,7 @@ public class SipClient implements SipListener {
 	                voiceClient.send();
 
 	                System.out.println("Send : " + ACK.toString());
+
 
 				}
 				if(response.getStatusCode() == 404) {

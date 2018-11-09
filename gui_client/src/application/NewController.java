@@ -39,9 +39,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableColumn;
@@ -60,8 +62,12 @@ public class NewController extends Application implements Initializable {
 	public TextArea textarea = new TextArea("");
 	public SipClient sipListener;
 	static SipClient temp;
+	
 
 
+	@FXML
+	public Label lblTimer;
+	public Label lblUser, lblContactWith;
 	
 	@FXML
 	private javafx.scene.control.Button start, deregister, Add, Remove, btnCall,  btnCancel ;
@@ -94,13 +100,8 @@ public class NewController extends Application implements Initializable {
 	private ObservableList<User> datalist = FXCollections.observableArrayList();
 	
 	@FXML
-	private javafx.scene.control.TextField ContactUsername, ContactURI;
+	public javafx.scene.control.TextField ContactUsername, ContactURI;
 
-//	public void displayMessage(String string)
-//	  {
-//	    	  textarea.setText(string +"\n");  
-//
-//	  }
 	
 	
 	private static boolean running = true;
@@ -198,8 +199,7 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	private void handleButtonStart(ActionEvent event) throws Exception { // xử lí button Start
 			sipListener = new SipClient(this);
-	        sipListener.register(getUserName(),getPassword());      
-	        
+	        sipListener.register(getUserName(),getPassword());  
 	        temp = sipListener.getSipListener();
 	}
 	
@@ -260,7 +260,6 @@ public class NewController extends Application implements Initializable {
 	private void handleButtonDeregister(ActionEvent event) throws Exception { // button xoa dang ki -> ra man hinh register
 		sipListener = temp.getSipListener();
 		sipListener.sendRequest("DEREGISTER");
-		
 		    	
 		    	Stage stage = (Stage)deregister.getScene().getWindow();
 		  		stage.close();
@@ -302,6 +301,7 @@ public class NewController extends Application implements Initializable {
 	@FXML
 	private void handleButtonCall(ActionEvent event) throws Exception { // button call
 		User selectedItem = tableview.getSelectionModel().getSelectedItem();
+		lblContactWith.setText("Calling "+ selectedItem.getPhone());
 		//this.btnCancel.setDisable(true);
 		sipListener = temp.getSipListener();
 		if(sipListener.isUAS() == false)
@@ -318,9 +318,12 @@ public class NewController extends Application implements Initializable {
 	
 	@FXML
 	private void handleButtonCancel(ActionEvent event) throws Exception { // button call
+		lblContactWith.setText("");
 		sipListener = temp.getSipListener();
 		sipListener.getCancelCall();
 	}
+	
+
 	@Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -371,6 +374,7 @@ public class NewController extends Application implements Initializable {
     }  
 
 	public void start(Stage stage) throws Exception {
+
 	        Parent root = FXMLLoader.load(getClass().getResource("Register.fxml"));
 	        
 	        Scene scene = new Scene(root);
@@ -380,6 +384,7 @@ public class NewController extends Application implements Initializable {
     }
 	
 	public static void main(String[] args) {
-		launch(args);			
+
+		launch(args);
 	}
 }
